@@ -3,7 +3,8 @@
 
 ## Scanning script which enables user to utilize host list / alter depth of scan
 	===========================================================================================================================
-   	**usage** ./name <path_to_targets.txt>			
+   	usage
+	> ./name <path_to_targets.txt> -L	
     							
  	    						
  		 -L   	: Large Scan				
