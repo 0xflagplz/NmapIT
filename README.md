@@ -1,7 +1,7 @@
-# nmapIT
+# NmapIT
 
 
-	Scanning script which enables user to utilize host list / alter depth of scan
+## Scanning script which enables user to utilize host list / alter depth of scan
 	===========================================================================================================================
    	usage ./name <path_to_targets.txt>			
     							
