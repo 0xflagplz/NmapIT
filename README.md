@@ -2,21 +2,21 @@
 
 
 	Scanning script which enables user to utilize host list / alter depth of scan
-===========================================================================================================================
-   usage ./name <path_to_targets.txt>			
+	===========================================================================================================================
+   	usage ./name <path_to_targets.txt>			
     							
  	    						
- 	 -L   	: Large Scan				
+ 		 -L   	: Large Scan				
  	    						
-		targets.txt 				        
- 	   : should be formatted as followed  		
-		   : SINGLE IP PER LINE				
+			targets.txt 				        
+ 	 	        : should be formatted as followed  		
+		        : SINGLE IP PER LINE				
 		     						
 		Line 1>		192.168.1.3			
 		Line 2>		lagplz.htb			
 								
  	   
- ===========================================================================================================================
+	 ===========================================================================================================================
 										
 Deafult Scans:
 	> nmap -T5 -p 21 --script ftp-anon $LINE -oA scanning_output/$LINE/AnonFTP
