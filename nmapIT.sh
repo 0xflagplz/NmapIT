@@ -28,6 +28,12 @@ echo -e " "
 echo -e " "
 }
 
+if [ `whoami` != root ]; then
+    echo "Please run this script as root or using sudo"
+    exit
+fi
+
+
 #checkk if target.txt was provided
 if [ -z "$1" ]
   then
@@ -66,7 +72,8 @@ needSomeSpace
 
 # Taking file input
 FILE=$1
-
+tag=""
+tag+=$2
 
 needSomeSpace
 
@@ -89,27 +96,37 @@ while read LINE; do
 	 	#
 	 	# This is meant to be altered on the fly while also being able to scan a variety of targets
 	 	#
-		echo "Scanning For anonymous FTP result"
-		nmap -T5 -p 21 --script ftp-anon $LINE -oA scanning_output/$LINE/AnonFTP
+		echo "Scanning For FTP result"
+		mkdir scanning_output/$LINE/FTP
+		nmap -T4 -p 21 $LINE -oA scanning_output/$LINE/FTP/FTP_out
 		needSomeSpace
 
 		echo "Scanning for RDP Ciphers and connection details"
-		nmap -T5 -p 3389 --script rdp-enum-encryption $LINE -oA scanning_output/$LINE/RDPEnum
-		needSomeSpace
+		mkdir scanning_output/$LINE/RDPEnum
+		nmap -T4 -p 3389 --script rdp-enum-encryption $LINE -oA scanning_output/$LINE/RDPEnum/RDPEnum_out
+		needSomeSpace;
 		echo "Scanning for SMB signing"
-		nmap -T5 -p 445 --script smb-security-mode $LINE -oA scanning_output/$LINE/SMBSigning
-		needSomeSpace
+		mkdir scanning_output/$LINE/SMBShares
+		nmap --script=smb-enum-shares.nse,smb-enum-users.nse,smb-os-discovery.nse -p445 $LINE -oA scanning_output/$LINE/SMBShares/SMBShares_out
+		needSomeSpace;
+		echo "Generic Scan"
+		mkdir scanning_output/$LINE/GenericScan
+		nmap -T5 --top-ports 100 -O -sC -sV $LINE -oA scanning_output/$LINE/GenericScan/GenericScan_out
 		
-		if [ $2 = "-L" ]; then
+		if [ $tag = "-L" ]; 
+		then
 		
 			echo "Scanning all the ports..."
-			nmap -v -T5 -Pn -sV -p- $LINE -oA scanning_output/$LINE/FullPortScan
+			mkdir scanning_output/$LINE/FullPortScan
+			nmap -v -T5 -Pn -sV -p- $LINE -oA scanning_output/$LINE/FullPortScan/FullPortScan_out
 			needSomeSpace
 			echo "Scanning the Top 100 Ports with ScriptScan"
-			nmap -v -T5 -Pn -sV --script vuln --top-ports 1000 $LINE -oA scanning_output/$LINE/Top1000ScriptScan
+			mkdir scanning_output/$LINE/Top100ScriptScan
+			nmap -v -T5 -Pn -sV --script vuln --top-ports 100 $LINE -oA scanning_output/$LINE/Top100ScriptScan/Top100ScriptScan_out
 			needSomeSpace
 			echo "Scan UDP"
-			nmap -v -T5 -Pn -sU --top-ports 100 $LINE -oA scanning_output/$LINE/UDPScan
+			mkdir scanning_output/$LINE/UDPScan
+			nmap -v -T5 -Pn -sU --top-ports 100 $LINE -oA scanning_output/$LINE/UDPScan/UDPScan_out
 			needSomeSpace
 		else
 			echo "Skipping Large Scans"
