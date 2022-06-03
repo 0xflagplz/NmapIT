@@ -96,6 +96,7 @@ while read LINE; do
 	 	#
 	 	# This is meant to be altered on the fly while also being able to scan a variety of targets
 	 	#
+		
 		echo "Scanning For FTP result"
 		mkdir scanning_output/$LINE/FTP
 		nmap -T4 -p 21 $LINE -oA scanning_output/$LINE/FTP/FTP_out
@@ -105,13 +106,18 @@ while read LINE; do
 		mkdir scanning_output/$LINE/RDPEnum
 		nmap -T4 -p 3389 --script rdp-enum-encryption $LINE -oA scanning_output/$LINE/RDPEnum/RDPEnum_out
 		needSomeSpace;
+		
 		echo "Scanning for SMB signing"
 		mkdir scanning_output/$LINE/SMBShares
 		nmap --script=smb-enum-shares.nse,smb-enum-users.nse,smb-os-discovery.nse -p445 $LINE -oA scanning_output/$LINE/SMBShares/SMBShares_out
 		needSomeSpace;
+		
 		echo "Generic Scan"
 		mkdir scanning_output/$LINE/GenericScan
 		nmap -T5 --top-ports 100 -O -sC -sV $LINE -oA scanning_output/$LINE/GenericScan/GenericScan_out
+		nmap -vv --reason -Pn -T4 -sV -sC --version-all -A --osscan-guess -oA scanning_output/$LINE/GenericScan/quick_scan $LINE
+		nmap -vv --reason -Pn -T4 -sV -sC --version-all -A --osscan-guess -p- -oA scanning_output/$LINE/GenericScan/full_scan $LINE
+		nmap -vv --reason -Pn -T4 -sV -p 80 --script="banner,(http* or ssl*) and not (brute or broadcast or dos or external or http-slowloris* or fuzzer)" -oA scanning_output/$LINE/GenericScan/port80_scan $LINE
 		
 		if [ $tag = "-L" ]; 
 		then
